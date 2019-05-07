@@ -1,20 +1,40 @@
 mixin storeForm(store = {})
-  form(action=`/add/${store._id || ''}` method="POST"  class="card")
+  form(action=`/add/${store._id || ''}` method="POST"  class="card" enctype="multipart/form-data")
+     
+     //- =========================================================================
+     //- NAME & DESCRIPTION
      label(for="name") Name
      input(type="text" name="name" value=store.name)
+
      label(for="description") Description
      textarea(name="description")= store.description
 
-     //- Address Eng and Lat
-     label(for="address") Address
-     input(type='text' id="address" name="location[address]" value=(store.location && store.location.address))
-     
-     //- Be carefull start by longitude LONG
-     label(for="lng") Address Longitude
-     input(type="text" id="lng" name="location[coordinates][0]" value=(store.location && store.location.coordinates[0]) required)
-     label(for="lat") Address Latitude
-     input(type="text" id="lat" name="location[coordinates][1]" value=(store.location && store.location.coordinates[1]) required)
-     //- pre= h.dump(store) ==> Dump show the json return and allow you ti use it then
+
+     //- =========================================================================
+     //- UPLOAD PHOTOS
+     label(for='photo') Photo
+     input(type="file" name="photo" id='photo' accept="image/gif, image/png, image/jpeg")
+     if store.photo
+          img(src=`/uploads/${store.photo}`, alt=store.name width=200)
+
+
+
+
+     //- //- =========================================================================
+     //- //- ADDRESS (Lng and Lat)    (Be carefull start by longitude LONG)
+     //- label(for="address") Address
+     //- input(type='text' id="address" name="location[address]" value=(store.location && store.location.address))
+
+     //- label(for="lng") Address Longitude
+     //- input(type="text" id="lng" name="location[coordinates][0]" value=(store.location && store.location.coordinates[0]) required)
+
+     //- label(for="lat") Address Latitude
+     //- input(type="text" id="lat" name="location[coordinates][1]" value=(store.location && store.location.coordinates[1]) required)
+     //- //- pre= h.dump(store) ==> Dump show the json return by Google Map and allow you ti use it then
+
+
+     //- =========================================================================
+     //- CHECKBOX
      - const choices = ['Wifi', 'Vegeratian', "Carnivore", "Fast Food", "Licenced" ]
      ul.tags 
           each choice in choices 
@@ -22,3 +42,8 @@ mixin storeForm(store = {})
                input(type="checkbox" id=choice value=choice name="tags" )
                label(for=choice) #{choice}
      input(type="submit" value="Save" class="button")
+
+
+     //- To allow UPLOAD PICTURES
+     //- 1 - Changer le enctype='multipart/form-data'
+     //- 2 ajouter dans controller multer

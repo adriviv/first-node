@@ -1,6 +1,31 @@
-// SET UP 
+// SET UP DB and Model
 const mongoose = require('mongoose');
 const Store = mongoose.model('Store');
+
+
+// ============================================================================ 
+// SET UP UPLOAD IMAGE
+const multer = require('multer');
+const jimp = require('jimp'); // Allow to resize a photo 
+const uuid = require('uuid'); // provide unique Image ID, not overwhrite when 2 image have same name
+
+const multerOptions = {
+   // 1- first store the image in the tempoprary memory
+    storage: multer.memoryStorage(),
+   // 2- What kind of file is ok  
+   fileFilter(req, file, next){
+       const isPhoto = file.mimetype.startsWith('image/') ;// here all image format. 'image/jpeg' say only jpeg
+       if(isPhoto) {
+           next(null, true);
+       } else {
+            next({ message: 'That type of file is not allowed'}, false);
+       }
+   }
+};
+
+// ============================================================================ 
+// ============================================================================ 
+
 
 // HomePage: Can be directly done in the Router
 // exports.homePage = (req, res) => {
@@ -20,6 +45,15 @@ exports.getStores = async (req, res) => {
 };
 
 
+//SHOW
+exports.getStoreBySlug = async (req, res, next) => {
+    // res.json(req.params); ==> to see all the data return
+    const store = await Store.findOne({ slug: req.params.slug });
+    if (!store) return next();
+     res.json(store); // to see all the data that it is returned
+    // res.render('store', { store, title: store.name});
+};
+
 // ============================================================================ 
 // ADD: Render une view du form
 exports.addStore = (req, res) => {
@@ -27,6 +61,7 @@ exports.addStore = (req, res) => {
      title: 'Add Store'
  });
 };
+
 
 // CREATE: save data in the db
 exports.createStore = async (req, res) => {
@@ -52,7 +87,7 @@ exports.editStore = async (req, res) => {
 // UPDATE
 exports.updateStore = async (req, res) => {
     // set the location data to be a point
-    req.body.location.type = 'Point';
+    // req.body.location = 'Point'; // type come from model 
     // 1 - Find and update the store
     const store = await Store.findOneAndUpdate({ _id: req.params.id}, req.body, {
         new: true, // return the new store instead of the old one
@@ -64,3 +99,37 @@ exports.updateStore = async (req, res) => {
     res.redirect(`/stores/`);
 };
 
+
+
+
+
+//.=========================================================================
+//UPLOAD IMAGE thks to Multer that store in the temporary memory
+exports.upload = multer(multerOptions).single('photo');
+
+
+// RESIZE IMAGE before store in the db 
+exports.resize = async (req, res, next) => {
+    // 1 -- Check if there is no new file to resize
+    if (!req.file){ 
+        next(); // skip to the next middleware
+        return;
+    }
+    // console.log(req.file); ==> Ce qui nous donne le buffer 
+
+    // 2-- Unique Name 
+    const extension = req.file.mimetype.split('/')[1];
+    req.body.photo = `${uuid.v4()}.${extension}`;// split name and extention. keep only the etention and asign unique name
+    
+    // 3-- Resize Image
+    const photo = await jimp.read(req.file.buffer);
+    await photo.resize(800, jimp.AUTO); //from jimp documentation to make it auto 
+    await photo.write(`./public/uploads/${req.body.photo}`); // write the file at this location
+    next(); 
+}
+//=========================================================================.
+
+
+exports.getStoresByTag = async (req, res) => {
+    res.send('it works')
+};

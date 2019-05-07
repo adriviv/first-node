@@ -19,23 +19,24 @@ const storeSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-
+    photo: String
 
     // ADD THE LOCATION 
-    location: {
-        type: {
-            type: String, 
-            default: 'Point'
-        },
-        coordinates: [{
-            type: Number,
-            required: 'You must supply coordinates!'
-        }],
-        address: {
-            type: String, 
-            required: 'You must supply an address! ' 
-        }
-    }
+    // location: {
+    //     type: {
+    //         type: String, 
+    //         default: 'Point'
+    //     },
+    //     coordinates: [{
+    //         type: Number,
+    //         required: 'You must supply coordinates!'
+    //     }],
+    //     address: {
+    //         type: String, 
+    //         required: 'You must supply an address! ' 
+    //     }
+    // }, 
+    
 });
 
 storeSchema.pre('save', function(next){
@@ -44,7 +45,10 @@ storeSchema.pre('save', function(next){
         return;
     }
     this.slug = slug(this.name);
+
+
     next();
 });
+
 
 module.exports = mongoose.model('Store', storeSchema); 
