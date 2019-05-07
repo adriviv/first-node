@@ -113,6 +113,48 @@ __webpack_require__(1);
 
 var _bling = __webpack_require__(0);
 
+var _autocomplete = __webpack_require__(4);
+
+var _autocomplete2 = _interopRequireDefault(_autocomplete);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// We need to make it run== On lui passe les id de Address, lng, lat 
+(0, _autocomplete2.default)((0, _bling.$)('#address'), (0, _bling.$)('#lat'), (0, _bling.$)('#lng'));
+
+/***/ }),
+/* 3 */,
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+// CARREFULL --> Google map put Lat before Lng 
+
+function autocomplete(input, latInput, lngInput) {
+    // console.log(input, latInput, lngInput);
+    if (!input) return; //if no input, no running
+    var dropdown = new google.maps.places.Autocomplete(input);
+
+    dropdown.addListener('place_changed', function () {
+        var place = dropdown.getPlace();
+        // console.log(place); // to see all the infos coming from Google maps of the city
+        latInput.value = place.geometry.location.lat();
+        lngInput.value = palce.geometry.location.lng();
+    });
+    // If someone hits enter on the address field, don't submit the form
+    input.on('keydown', function (e) {
+        if (e.keycode === 13) e.preventDefault();
+        // 13 is the number to say click enter
+    });
+}
+
+exports.default = autocomplete;
+
 /***/ })
 /******/ ]);
 //# sourceMappingURL=App.bundle.js.map
