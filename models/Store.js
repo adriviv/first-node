@@ -1,7 +1,10 @@
+//  !!!!!!! DON'T FORGET to require model in Start.js
 const mongoose = require('mongoose'); 
 mongoose.Promise = global.Promise;
 const slug = require('slugs');
 
+
+// SCHEMA 
 const storeSchema = new mongoose.Schema({
     name: {
         type: String, 
@@ -21,7 +24,7 @@ const storeSchema = new mongoose.Schema({
     },
     photo: String
 
-    // ADD THE LOCATION 
+    // //ADD THE LOCATION 
     // location: {
     //     type: {
     //         type: String, 
@@ -39,16 +42,29 @@ const storeSchema = new mongoose.Schema({
     
 });
 
+
+// UPDATE STORE
 storeSchema.pre('save', function(next){
     if (!this.isModified('name')){
         next();
         return;
     }
     this.slug = slug(this.name);
-
-
-    next();
+     next();
 });
+
+
+// Our OWN FUnction  to find Tags 
+storeSchema.statics.getTagsList = function() { // statics make our own method work
+        return this.aggregate([ //Agregate is like findById for many parameters for Mongo
+            // to know the diff agregate operators check MongoDb doc
+            { $unwind: '$tags'},
+            { $group: { _id: '$tags', count: { $sum: 1 } } }, // group eerything based on the tag field  and create a new field count that sum +1 each time 
+            { $sort: { count: -1 } }// sort by most popular (1 is ascending, -1 is descending)
+        ]);
+}; 
+
+
 
 
 module.exports = mongoose.model('Store', storeSchema); 

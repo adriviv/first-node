@@ -1,10 +1,10 @@
-// SET UP DB and Model
+//                      SET UP DB and Model
+// ============================================================================ 
 const mongoose = require('mongoose');
 const Store = mongoose.model('Store');
 
-
+//                      SET UP UPLOAD IMAGE  
 // ============================================================================ 
-// SET UP UPLOAD IMAGE
 const multer = require('multer');
 const jimp = require('jimp'); // Allow to resize a photo 
 const uuid = require('uuid'); // provide unique Image ID, not overwhrite when 2 image have same name
@@ -23,20 +23,15 @@ const multerOptions = {
    }
 };
 
-// ============================================================================ 
-// ============================================================================ 
 
 
-// HomePage: Can be directly done in the Router
-// exports.homePage = (req, res) => {
-//     res.render('index',{
-//         name: 'yolo', 
-//         category: 'youjou'
-//     });
-// };
 
+//=============================================================================
+//                             STORE CRUD
 // ============================================================================ 
-//INDEX
+
+//                              INDEX
+// -------------------------------------------------------------------------
 exports.getStores = async (req, res) => {
     // 1 Query the strores present in the database 
     const stores = await Store.find();
@@ -45,7 +40,8 @@ exports.getStores = async (req, res) => {
 };
 
 
-//SHOW
+//                              SHOW
+// -------------------------------------------------------------------------
 exports.getStoreBySlug = async (req, res, next) => {
     // res.json(req.params); ==> to see all the data return
     const store = await Store.findOne({ slug: req.params.slug });
@@ -54,7 +50,8 @@ exports.getStoreBySlug = async (req, res, next) => {
     // res.render('store', { store, title: store.name});
 };
 
-// ============================================================================ 
+//                              ADD / CREATE
+// -------------------------------------------------------------------------
 // ADD: Render une view du form
 exports.addStore = (req, res) => {
  res.render('editStore', {
@@ -73,8 +70,9 @@ exports.createStore = async (req, res) => {
 };
 
 
-// ============================================================================ 
-// EDIT
+//                              EDIT / UPDATE 
+// -------------------------------------------------------------------------
+// EDIT 
 exports.editStore = async (req, res) => {
     // 1 - find the store ID 
     const store = await Store.findOne({ _id: req.params.id}); 
@@ -102,13 +100,14 @@ exports.updateStore = async (req, res) => {
 
 
 
-
+//=========================================================================.
+//                              UPLOAD IMAGE
 //.=========================================================================
-//UPLOAD IMAGE thks to Multer that store in the temporary memory
+//1 - UPLOAD IMAGE thks to Multer that store in the temporary memory
 exports.upload = multer(multerOptions).single('photo');
 
 
-// RESIZE IMAGE before store in the db 
+// 2 - RESIZE IMAGE before store in the db 
 exports.resize = async (req, res, next) => {
     // 1 -- Check if there is no new file to resize
     if (!req.file){ 
@@ -127,9 +126,21 @@ exports.resize = async (req, res, next) => {
     await photo.write(`./public/uploads/${req.body.photo}`); // write the file at this location
     next(); 
 }
+
+
 //=========================================================================.
-
-
+//                              TAG CONTROLLER 
+//=========================================================================.
 exports.getStoresByTag = async (req, res) => {
-    res.send('it works')
+    // res.send('it works') // test if the routes is working 
+    const tag = req.params.tag;
+    const tagQuery = tag || {$exists: true}; // when no tags specify , show all 
+
+    const tagsPromise = Store.getTagsList(); // create our ow method get TagsList in Store Model to fin tags 
+    const storesPromise = Store.find({ tags: tagQuery});
+    const [tags, stores] = await Promise.all([tagsPromise, storesPromise]); // We do 2 queries and wait for both finish to go to next step 
+    // res.json(stores); // intermediary step to see info of store we have
+    // res.json(tags); // intermediary step to see info of tags
+
+     res.render('tag', { tags, title: 'Tags', tag, stores})
 };
