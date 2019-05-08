@@ -46,8 +46,8 @@ exports.getStoreBySlug = async (req, res, next) => {
     // res.json(req.params); ==> to see all the data return
     const store = await Store.findOne({ slug: req.params.slug });
     if (!store) return next();
-     res.json(store); // to see all the data that it is returned
-    // res.render('store', { store, title: store.name});
+     //res.json(store); // to see all the data that it is returned
+     res.render('store', { store, title: store.name});
 };
 
 //                              ADD / CREATE

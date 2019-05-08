@@ -18,6 +18,7 @@ router.get('/stores', catchErrors(storeController.getStores));
 // SHOW 
 router.get('/store/:slug', catchErrors(storeController.getStoreBySlug));
 
+
 // ADD 
 router.get('/add', authController.isLoggedIn, storeController.addStore);
 
