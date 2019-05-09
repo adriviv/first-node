@@ -1014,6 +1014,12 @@ function ajaxHeart(e) {
           var isHearted = _this.heart.classList.toggle('heart__button--hearted'); // this.heart, heart is the name of the submit button on the front-end
           // 2 -  update automatically the number of heart in the Navbar
           (0, _bling.$)('.heart-count').textContent = res.data.hearts.length;
+          if (isHearted) {
+               _this.heart.classList.add('heart__button--float');
+               setTimeout(function () {
+                    return _this.heart.classList.remove('heart__button--float');
+               }, 2500);
+          }
      }).catch(console.error);
 }
 // now import it in the delicisous-app.js

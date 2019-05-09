@@ -28,6 +28,7 @@ const storeSchema = new mongoose.Schema({
         ref: 'User', 
         required: 'You must supply an author'
     }
+},
 
     // //ADD THE LOCATION 
     // location: {
@@ -44,8 +45,11 @@ const storeSchema = new mongoose.Schema({
     //         required: 'You must supply an address! ' 
     //     }
     // }, 
-    
-});
+    {
+      toJSON: { virtuals: true}, // allow you see with pre=h.dump(store) all the virtual JSON and virtual Objects
+      toObject: {virtuals: true},
+    }
+    );
 
 // INDEX FOR SEARCHBAR
 storeSchema.index({ // which filed you allow people to search via this search bar
@@ -64,6 +68,9 @@ storeSchema.pre('save', function(next){
 });
 
 
+//====================================================================
+//                                      TAGS
+//====================================================================
 // Our OWN FUnction  to find Tags 
 storeSchema.statics.getTagsList = function() { // statics make our own method work
         return this.aggregate([ //Agregate is like findById for many parameters for Mongo
@@ -75,6 +82,16 @@ storeSchema.statics.getTagsList = function() { // statics make our own method wo
 }; 
 
 
-
+//====================================================================
+//                                      REVIEWS
+//====================================================================// To be able on the store to have access to reviews
+// INDEX 
+//find reviews where the stores _id property === reviews store property
+storeSchema.virtual('reviews', {
+// Tell to go off to an other model and make a query 
+    ref: 'Review',  // what model to link
+    localField: '_id', // witch field on the store 
+    foreignField: 'store' // witch fields on the review
+});
 
 module.exports = mongoose.model('Store', storeSchema); 

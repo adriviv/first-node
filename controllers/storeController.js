@@ -45,7 +45,7 @@ exports.getStores = async (req, res) => {
 // -------------------------------------------------------------------------
 exports.getStoreBySlug = async (req, res, next) => {
     // res.json(req.params); ==> to see all the data return
-    const store = await Store.findOne({ slug: req.params.slug }).populate('author'); // populate: find the associate model and give access to all ots informations. 
+    const store = await Store.findOne({ slug: req.params.slug }).populate('author reviews'); // populate: find the associate model and give access to all ots informations. 
     if (!store) return next();
      //res.json(store); // to see all the data that it is returned
      res.render('store', { store, title: store.name});
