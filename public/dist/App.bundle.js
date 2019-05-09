@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 30);
+/******/ 	return __webpack_require__(__webpack_require__.s = 31);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -990,7 +990,7 @@ var _axios = __webpack_require__(12);
 
 var _axios2 = _interopRequireDefault(_axios);
 
-var _dompurify = __webpack_require__(32);
+var _dompurify = __webpack_require__(30);
 
 var _dompurify2 = _interopRequireDefault(_dompurify);
 
@@ -1885,33 +1885,6 @@ module.exports = function spread(callback) {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
-
-__webpack_require__(11);
-
-var _bling = __webpack_require__(9);
-
-var _autocomplete = __webpack_require__(8);
-
-var _autocomplete2 = _interopRequireDefault(_autocomplete);
-
-var _typeAhead = __webpack_require__(10);
-
-var _typeAhead2 = _interopRequireDefault(_typeAhead);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// We need to make it run== On lui passe les id de Address, lng, lat 
-(0, _autocomplete2.default)((0, _bling.$)('#address'), (0, _bling.$)('#lat'), (0, _bling.$)('#lng'));
-
-(0, _typeAhead2.default)((0, _bling.$)('.search'));
-
-/***/ }),
-/* 31 */,
-/* 32 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
 var __WEBPACK_AMD_DEFINE_RESULT__;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -2719,6 +2692,76 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     return DOMPurify;
 });
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(11);
+
+var _bling = __webpack_require__(9);
+
+var _autocomplete = __webpack_require__(8);
+
+var _autocomplete2 = _interopRequireDefault(_autocomplete);
+
+var _typeAhead = __webpack_require__(10);
+
+var _typeAhead2 = _interopRequireDefault(_typeAhead);
+
+var _heart = __webpack_require__(34);
+
+var _heart2 = _interopRequireDefault(_heart);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// We need to make it run== On lui passe les id de Address, lng, lat 
+(0, _autocomplete2.default)((0, _bling.$)('#address'), (0, _bling.$)('#lat'), (0, _bling.$)('#lng'));
+
+(0, _typeAhead2.default)((0, _bling.$)('.search'));
+
+var heartForms = (0, _bling.$$)('form.heart'); // $$ means document.querySelectorAll
+heartForms.on('submit', _heart2.default);
+
+/***/ }),
+/* 32 */,
+/* 33 */,
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+     value: true
+});
+
+var _axios = __webpack_require__(12);
+
+var _axios2 = _interopRequireDefault(_axios);
+
+var _bling = __webpack_require__(9);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function ajaxHeart(e) {
+     var _this = this;
+
+     e.preventDefault(); //strop the form to submitting itself
+     console.log('HEART IT ');
+     _axios2.default.post(this.action).then(function (res) {
+          // 1 - AUtomatic apply active class or not wihout reload page. 
+          //  console.log(res.data); // will show you the id, address where we want to post 
+          var isHearted = _this.heart.classList.toggle('heart__button--hearted'); // this.heart, heart is the name of the submit button on the front-end
+          // 2 -  update automatically the number of heart in the Navbar
+          (0, _bling.$)('.heart-count').textContent = res.data.hearts.length;
+     }).catch(console.error);
+}
+// now import it in the delicisous-app.js
+exports.default = ajaxHeart;
 
 /***/ })
 /******/ ]);

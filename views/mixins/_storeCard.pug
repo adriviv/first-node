@@ -3,6 +3,15 @@ mixin storeCard(store = {})
         .store__hero
           .store__actions
             //- pre= h.dump(store)
+            if user 
+              .store__action.store__action--heart
+                form.heart(method="POST" action=`/api/stores/${store._id}/heart`)
+                  - const heartStrings = user.hearts.map(obj => obj.toString())
+                  - const heartClass = heartStrings.includes(store._id.toString()) ? 'heart__button--hearted' : ""
+                  //- pre= h.dump(heartStrings) // so see the list of hearts
+                  //- pre= h.dump(store._id) // so see the id of each store and then compare if the store id is on the list of heart 
+                  button.heart__button(type="submit" name='heart' class=heartClass)
+                    != h.icon('heart')
             if user && store.author.equals(user._id) 
               //- permet de faire apparraitr ou pas le bouton mofigfier
               .store__action.store__action--edit 

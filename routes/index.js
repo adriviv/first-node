@@ -96,11 +96,13 @@ router.post('/account/reset/:token',
 // ===============================================================
 //                          SEARCHBAR / API 
 // ===============================================================
-// INDEX
 router.get('/api/search', catchErrors(storeController.searchStores));
 
 
-
+// ===============================================================
+//                          FAVORITES / HEART
+// ===============================================================
+router.post('/api/stores/:id/heart', catchErrors(storeController.heartStore))
 
 
 module.exports = router;
