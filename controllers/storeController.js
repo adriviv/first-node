@@ -2,6 +2,7 @@
 // ============================================================================ 
 const mongoose = require('mongoose');
 const Store = mongoose.model('Store');
+const User = mongoose.model('User');
 
 //                      SET UP UPLOAD IMAGE  
 // ============================================================================ 
@@ -153,3 +154,45 @@ exports.getStoresByTag = async (req, res) => {
 
      res.render('tag', { tags, title: 'Tags', tag, stores})
 };
+
+
+//=========================================================================.
+//                             SEARCH BAR 
+//=========================================================================.
+// INDEX 
+exports.searchStores = async (req, res) => {
+    // res.json({ it: 'Worked'}) //to test the route 
+    const stores = await Store
+    // 1-  First find stores that mattch with the query 
+    .find( { $text : { $search: req.query.q } },// => what is the input  
+           { score: { $meta: 'textScore' } } // What is the score to order 
+        )
+    // 2 - Sort them
+    .sort(
+          { score: { $meta: 'textScore' } }
+        )   
+    // 3 - limit only to 5 results
+    .limit(5);
+    res.json(stores); // to test what is the result in json 
+};
+
+
+//=========================================================================.
+//                             FAVORITES / HEARTS
+//=========================================================================.
+// ADD & DESTROY 
+exports.heartStore = async (req, res) => {
+    // 1 - list all the hearts id 
+    const hearts = req.user.hearts.map(obj => obj.toString()); 
+    // 2 -  check if the heart is already in the array : if it is we remove, otherwise we add 
+    const operator = hearts.includes(req.params.id) ? '$pull' : '$addToSet' ; // MongoDb method => $pull = rm / push = add / BUT bc we want to be unique we usse $addToSet
+    const user = await User
+    .findByIdAndUpdate(req.user._id,
+        { [operator]: { hearts: req.params.id }},
+        { new: true }
+    );
+    res.json(user); // when click on the heart should add one store in the list of heart , if already favorites shoud remove one 
+    // to check the heart color active or not ==> cf storeCard.pug ligne 9 - 13
+    // to make the hart stay red or white without reload the page => CF public/javascript/heart.js 
+}
+
