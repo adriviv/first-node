@@ -7,6 +7,7 @@ const { catchErrors } = require('../handlers/errorHandlers');
 const storeController = require('../controllers/storeController');
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
+const reviewController = require('../controllers/reviewController');
 
 // =============================================================
 //                          STORE CONTROLLER 
@@ -103,6 +104,16 @@ router.get('/api/search', catchErrors(storeController.searchStores));
 //                          FAVORITES / HEART
 // ===============================================================
 router.post('/api/stores/:id/heart', catchErrors(storeController.heartStore))
+
+
+// ===============================================================
+//                              REVIEWS
+// ===============================================================
+//ADD
+router.post('/reviews/:id', 
+    authController.isLoggedIn, 
+    catchErrors(reviewController.addReview)
+);
 
 
 module.exports = router;
