@@ -44,7 +44,7 @@ exports.getStores = async (req, res) => {
 // -------------------------------------------------------------------------
 exports.getStoreBySlug = async (req, res, next) => {
     // res.json(req.params); ==> to see all the data return
-    const store = await Store.findOne({ slug: req.params.slug });
+    const store = await Store.findOne({ slug: req.params.slug }).populate('author'); // populate: find the associate model and give access to all ots informations. 
     if (!store) return next();
      //res.json(store); // to see all the data that it is returned
      res.render('store', { store, title: store.name});
@@ -63,6 +63,7 @@ exports.addStore = (req, res) => {
 // CREATE: save data in the db
 exports.createStore = async (req, res) => {
     // console.log(req.body);
+    req.body.author = req.user._id; // make the reference to the user that has created the store. 
     const store = new Store(req.body);
     await store.save();
     req.flash('success', `You successfully created the restaurant ${store.name}.`);
@@ -72,12 +73,20 @@ exports.createStore = async (req, res) => {
 
 //                              EDIT / UPDATE 
 // -------------------------------------------------------------------------
+// CONFIRM OWNER 
+const confirmOwner = (store, user) => {
+    if (!store.author.equals(user._id)){
+        throw Error('You must own a store in order to edit it');
+    };
+};
+
+
 // EDIT 
 exports.editStore = async (req, res) => {
     // 1 - find the store ID 
     const store = await Store.findOne({ _id: req.params.id}); 
     // 2 confirm they are the owner of the store
-        // TODO
+    confirmOwner(store, req.user);
     // 3 Render out the edit form so the user cand update their store
     res.render('editStore', { title: `Edit ${store.name}`, store });
 };
