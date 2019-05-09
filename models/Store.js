@@ -47,6 +47,11 @@ const storeSchema = new mongoose.Schema({
     
 });
 
+// INDEX FOR SEARCHBAR
+storeSchema.index({ // which filed you allow people to search via this search bar
+    name: 'text', 
+    description: 'text'
+});
 
 // UPDATE STORE
 storeSchema.pre('save', function(next){
