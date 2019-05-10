@@ -35,9 +35,36 @@ const multerOptions = {
 // -------------------------------------------------------------------------
 exports.getStores = async (req, res) => {
     // 1 Query the strores present in the database 
-    const stores = await Store.find();
+
+    //  2A without pagination
+    // const stores = await Store.find(); 
+    // res.render('stores', { title: 'Stores', stores });
+
+    // 2B With Pagination
+    const page = req.params.page || 1; // witch page you are 
+    const limit = 4;  // Limit by page 
+    const skip = (page * limit) - limit; // when you are on the second page , you don't want to show the 4 previous ones
+    
+    const storesPromise = Store
+    .find()
+    .skip(skip)
+    .limit(limit)
+    .sort({ created: 'desc' })
+    
+    const countPromise = Store.count();
+
+    const [stores, count] = await Promise.all([storesPromise, countPromise]);
+
+    const pages = Math.ceil(count / limit); 
+    if(!stores.length && skip) {
+        req.flash('info', `the page ${page} doesn't exist`);
+        res.redirect(`/stores/page/${pages}`);
+        return;
+    }
+    // for pagination Cf mixins
+
     // console.log(stores);
-    res.render('stores', { title: 'Stores', stores });
+    res.render('stores', { title: 'Stores', stores, page, pages, count });
 };
 
 

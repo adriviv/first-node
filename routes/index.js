@@ -16,6 +16,10 @@ const reviewController = require('../controllers/reviewController');
 router.get('/', catchErrors(storeController.getStores));
 router.get('/stores', catchErrors(storeController.getStores));
 
+// INDEX PAGINATION 
+router.get('/stores/page/:page', catchErrors(storeController.getStores));
+
+
 // SHOW 
 router.get('/store/:slug', catchErrors(storeController.getStoreBySlug));
 
