@@ -93,7 +93,6 @@ router.post('/account/reset/:token',
 );
 
 
-
 // ===============================================================
 //                          SEARCHBAR / API 
 // ===============================================================
@@ -103,7 +102,7 @@ router.get('/api/search', catchErrors(storeController.searchStores));
 // ===============================================================
 //                          FAVORITES / HEART
 // ===============================================================
-router.post('/api/stores/:id/heart', catchErrors(storeController.heartStore))
+router.post('/api/stores/:id/heart', catchErrors(storeController.heartStore));
 
 
 // ===============================================================
@@ -114,6 +113,12 @@ router.post('/reviews/:id',
     authController.isLoggedIn, 
     catchErrors(reviewController.addReview)
 );
+
+// ===============================================================
+//                              TOP RANKING
+// ===============================================================
+// TOP RANKING 
+router.get('/top', catchErrors(storeController.getTopStores));
 
 
 module.exports = router;

@@ -194,5 +194,14 @@ exports.heartStore = async (req, res) => {
     res.json(user); // when click on the heart should add one store in the list of heart , if already favorites shoud remove one 
     // to check the heart color active or not ==> cf storeCard.pug ligne 9 - 13
     // to make the hart stay red or white without reload the page => CF public/javascript/heart.js 
-}
+};
 
+//=========================================================================.
+//                           RANKING  TOP STORES 
+//=========================================================================.
+exports.getTopStores = async (req, res) => {
+    const stores = await Store.getTopStores(); // the getTopStores is a complex query function that why we put it in the Model
+    // res.json(stores);
+    res.render('topStores', { stores, title:'Top  Stores'}
+     );
+};
